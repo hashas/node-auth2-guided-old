@@ -34,6 +34,24 @@ router.post("/login", async (req, res, next) => {
 			})
 		}
 
+//		// manual number generation for token
+// 		const authToken = Math.random()
+// 		sessions[authToken] = user.Invalid
+
+// 		// // Option1: when sending "Authorization" header in GET request
+// 		// res.setHeader("Authorization", authToken)
+
+		// Option2: Using "Set-Cookie" implementation
+// 		res.setHeader("Set-Cookie", `token=${authToken}; Path=/` )
+
+		// Option3: use express-session middleware, gives us req.session object
+		// to which we can attach 'user' object to and access later when user authorised.
+		// this does same as above but more automated, express-session is going to
+		// return a header with 'set-cookie' and set the token to a special encrypted 
+		// session id i.e. takes care of everything re sending/receiving cookies
+		req.session.user = user
+
+		// response
 		res.json({
 			message: `Welcome ${user.username}!`,
 		})
@@ -43,8 +61,22 @@ router.post("/login", async (req, res, next) => {
 })
 
 router.get("/logout", restrict(), (req, res, next) => {
-	// destroy the session here
-	res.end()
+	// destroy the session on the server, does not destroy the cookie in the client
+	// but the info inside the cookie is now useless/invalid
+
+	// normally we'd have a logout endpoint on react-router that calls a logout
+	// endpoint on the backend
+	req.session.destroy((err) => {
+		// takes a callback, not promise
+		if (err) {
+			next(err)
+		} else {
+			res.json({
+				message: "Seccessfully logged out",
+			})
+		}
+	})
+	// res.end()	
 })
 
 module.exports = router

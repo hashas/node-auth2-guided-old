@@ -1,10 +1,11 @@
 {
 	"private": true,
 	"scripts": {
-		"server": "nodemon index.js",
+		"server": "nodemon -r dotenv/config index.js",
 		"start": "node index.js"
 	},
 	"devDependencies": {
+		"dotenv": "^8.2.0",
 		"nodemon": "^2.0.2"
 	},
 	"dependencies": {
